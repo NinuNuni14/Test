@@ -3,6 +3,7 @@ package com.example.test
 import android.net.http.HttpException
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresExtension
 import androidx.appcompat.app.AppCompatActivity
@@ -18,8 +19,9 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CharacterAdapter.CharacterViewHolder.OnItemClickListener {
     private lateinit var binding: ActivityMainBinding
+    var a : DisneyCharacter? = null
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +58,7 @@ class MainActivity : AppCompatActivity() {
                         println(disney.info)
                         println(disney.data.size)
                         updateUI(disney)
+                        a = disney
 
                     } else {
                         println("Request failed: ${response.code}")
@@ -73,9 +76,13 @@ class MainActivity : AppCompatActivity() {
 //            binding.tvB.text = joke.punchline
 //            binding.tvType.text = joke.type }
             binding.recycleView.layoutManager = LinearLayoutManager(this)
-            val adapter = CharacterAdapter(disney.data)
+            val adapter = CharacterAdapter(disney.data,this)
             binding.recycleView.adapter = adapter
         }
+    }
+
+    override fun onItemClick(character: Character) {
+       println( character)
     }
 
 }
