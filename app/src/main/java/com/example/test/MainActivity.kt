@@ -7,7 +7,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresExtension
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.test.databinding.ActivityMainBinding
+import com.example.test.model.Character
+import com.example.test.model.DisneyCharacter
 import com.example.test.model.Joke
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +30,13 @@ class MainActivity : AppCompatActivity() {
 
         callAPI()
 
+
+
+
+
+        // Set the adapter to the RecyclerView
+
+
     }
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -34,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         val client = OkHttpClient()
 
         val request = Request.Builder()
-            .url("https://official-joke-api.appspot.com/random_joke")
+            .url("https://api.disneyapi.dev/character")
             .build()
         lifecycleScope.launch(Dispatchers.IO) {
             try{
@@ -42,11 +52,10 @@ class MainActivity : AppCompatActivity() {
                     if (response.isSuccessful) {
                         val responseBody = response.body?.string()
                         val gson = Gson()
-                        val joke = gson.fromJson(responseBody, Joke::class.java)
-                        println("Type = " + joke.type)
-                        println("Setup = ${joke.setup}")
-                        println("Punchline = ${joke.punchline}")
-                        updateUI(joke)
+                        val disney = gson.fromJson(responseBody, DisneyCharacter::class.java)
+                        println(disney.info)
+                        println(disney.data.size)
+                        updateUI(disney)
 
                     } else {
                         println("Request failed: ${response.code}")
@@ -58,12 +67,15 @@ class MainActivity : AppCompatActivity() {
             }
     }}
 
-    fun updateUI(joke: Joke){
+    fun updateUI(disney: DisneyCharacter) {
         runOnUiThread {
-            binding.tvA.text = joke.setup
-            binding.tvB.text = joke.punchline
-            binding.tvType.text = joke.type }
-
+//            binding.tvA.text = joke.setup
+//            binding.tvB.text = joke.punchline
+//            binding.tvType.text = joke.type }
+            binding.recycleView.layoutManager = LinearLayoutManager(this)
+            val adapter = CharacterAdapter(disney.data)
+            binding.recycleView.adapter = adapter
+        }
     }
 
 }
